@@ -6,6 +6,8 @@
 //   Case-insensitive segment deduplication
 //   Skip resources with no lifecycle scopes (Scope None)
 //   ARM response envelope unwrapping for function outputs
+//   Discriminator values, escaped descriptions, and secret properties
+//   Resource models exposed through multiple or custom routes
 
 import "@typespec/http";
 import "@typespec/rest";
@@ -66,6 +68,31 @@ model ConstrainedProperties {
 
   @doc("A scalar alias with string constraints.")
   constrainedAlias?: ConstrainedString;
+
+  @doc("A description containing an escaped \"quoted value\".")
+  quotedDescription?: string;
+
+  @secret
+  @doc("A sensitive value.")
+  password?: string;
+
+  @doc("A polymorphic value.")
+  polymorphicValue?: PolymorphicBase;
+}
+
+@discriminator("kind")
+model PolymorphicBase {
+  kind: string;
+}
+
+model FirstVariant extends PolymorphicBase {
+  kind: "first-value";
+  firstProperty?: string;
+}
+
+model SecondVariant extends PolymorphicBase {
+  kind: "second-value";
+  secondProperty?: string;
 }
 
 @doc("A resource with string-constrained properties")
@@ -142,6 +169,46 @@ model PrivateLinkResourceProperties {
   @doc("Required members")
   @visibility(Lifecycle.Read)
   requiredMembers?: string[];
+}
+
+// ============================================================
+// Custom resource routes
+// ============================================================
+
+@doc("A resource exposed through custom HTTP routes.")
+model CustomRouteResource is ProxyResource<CustomRouteProperties> {
+  @key("customRouteName")
+  @segment("customRouteResources")
+  @path
+  name: string;
+}
+
+model CustomRouteProperties {
+  value?: string;
+}
+
+#suppress "@azure-tools/typespec-azure-resource-manager/arm-resource-interface-requires-decorator" "Custom route regression coverage"
+#suppress "@azure-tools/typespec-azure-core/use-standard-operations" "Custom route regression coverage"
+interface CustomRouteOperations {
+  @route("/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Test.EdgeCases/parents/{parentName}/customRouteResources/{customRouteName}")
+  @get
+  get(
+    ...ApiVersionParameter,
+    ...SubscriptionIdParameter,
+    ...ResourceGroupParameter,
+    @path parentName: string,
+    @path customRouteName: string,
+  ): ArmResponse<CustomRouteResource> | ErrorResponse;
+
+  @route("/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Test.EdgeCases/alternateParents/{parentName}/customRouteResources/{customRouteName}")
+  @get
+  getAlternate(
+    ...ApiVersionParameter,
+    ...SubscriptionIdParameter,
+    ...ResourceGroupParameter,
+    @path parentName: string,
+    @path customRouteName: string,
+  ): ArmResponse<CustomRouteResource> | ErrorResponse;
 }
 
 // ============================================================

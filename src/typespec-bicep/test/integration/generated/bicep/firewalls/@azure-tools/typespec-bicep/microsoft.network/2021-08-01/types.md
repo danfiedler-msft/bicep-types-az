@@ -2,7 +2,7 @@
 
 ## Resource Microsoft.Network/azureFirewalls@2021-08-01
 * **Readable Scope(s)**: ResourceGroup
-* **Writable Scope(s)**: ResourceGroup
+* **Writable Scope(s)**: None
 ### Properties
 * **apiVersion**: '2021-08-01' (ReadOnly, DeployTimeConstant): The resource api version
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
@@ -16,7 +16,7 @@
 
 ## Resource Microsoft.Network/firewallPolicies@2021-08-01
 * **Readable Scope(s)**: ResourceGroup
-* **Writable Scope(s)**: ResourceGroup
+* **Writable Scope(s)**: None
 ### Properties
 * **apiVersion**: '2021-08-01' (ReadOnly, DeployTimeConstant): The resource api version
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
@@ -29,7 +29,7 @@
 
 ## Resource Microsoft.Network/firewallPolicies/ruleCollectionGroups@2021-08-01
 * **Readable Scope(s)**: ResourceGroup
-* **Writable Scope(s)**: ResourceGroup
+* **Writable Scope(s)**: None
 ### Properties
 * **apiVersion**: '2021-08-01' (ReadOnly, DeployTimeConstant): The resource api version
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id

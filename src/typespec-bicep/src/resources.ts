@@ -7,17 +7,21 @@ import {
   Model,
   ModelProperty,
   Namespace,
+  Operation,
   Program,
   Type,
 } from "@typespec/compiler";
 import { ScopeType } from "bicep-types";
 import {
   getArmResources,
+  getArmResourceOperationList,
   resolveArmResources,
   ArmResourceDetails,
+  ResolvedResource,
   isSingletonResource,
   getSingletonResourceKey,
 } from "@azure-tools/typespec-azure-resource-manager";
+import { getAllHttpServices, getHttpOperation, HttpOperation } from "@typespec/http";
 import { BicepEmitterOptions } from "./lib.js";
 
 /**
@@ -89,6 +93,7 @@ export function getProviderDefinitions(
   const armResources = getArmResources(program);
   const resolvedProvider = resolveArmResources(program);
   const resolvedResources = resolvedProvider.resources ?? [];
+  const customResourceRoutes = getCustomResourceRoutes(program);
 
   for (const armResource of armResources) {
     const namespace = armResource.armProviderNamespace;
@@ -110,36 +115,17 @@ export function getProviderDefinitions(
 
     const provider = providers.get(key)!;
 
-    // Find the resolved resource to get the full type hierarchy from resourceType.types
-    const resolved = resolvedResources.find(
+    // A single resource model can be exposed at multiple paths. Preserve every
+    // resolved instance instead of selecting only the first one. Exclude
+    // instances that merely share a route with the resource but whose actual
+    // lifecycle operation returns a different model (e.g. a "backups" or
+    // "commands" sub-path read that returns an unrelated response type) —
+    // those aren't real instances of this resource.
+    const resolvedMatches = resolvedResources.filter(
       (r) =>
-        r.type === model ||
-        r.resourceName === armResource.name,
+        (r.type === model || r.resourceName === armResource.name) &&
+        resolvedRepresentsModel(r, model),
     );
-
-    // Build type segments from the resolved resource type hierarchy.
-    // The resolved resourceType.types gives us the full parent chain,
-    // e.g. ["dnsZones", "dnssecConfigs"] for a child resource.
-    // For parameterized segments like {recordType}, the resolver may not include
-    // the collection name, so we ensure it's present.
-    let typeSegments: string[];
-    if (resolved?.resourceType.types.length) {
-      typeSegments = [...resolved.resourceType.types];
-      const collectionName = armResource.collectionName;
-      // If the last type segment doesn't match the collection name, append it
-      // Use case-insensitive comparison to avoid duplicates like "AuthorizationRules/authorizationRules"
-      if (
-        collectionName &&
-        typeSegments[typeSegments.length - 1].toLowerCase() !==
-          collectionName.toLowerCase()
-      ) {
-        typeSegments.push(collectionName);
-      }
-    } else if (armResource.collectionName) {
-      typeSegments = [armResource.collectionName];
-    } else {
-      continue;
-    }
 
     // Determine scopes from operations and paths
     const { readableScopes, writableScopes } = getResourceScopesFromArm(
@@ -148,9 +134,12 @@ export function getProviderDefinitions(
       resolvedProvider,
     );
 
-    // Skip resources with no scopes (e.g. privateLinkResources, replicas)
-    // that have no lifecycle operations (no PUT/GET with scope)
-    if (readableScopes === ScopeType.None && writableScopes === ScopeType.None) {
+    const routeMatches = customResourceRoutes.get(model) ?? [];
+    if (
+      readableScopes === ScopeType.None &&
+      writableScopes === ScopeType.None &&
+      routeMatches.length === 0
+    ) {
       continue;
     }
 
@@ -158,44 +147,179 @@ export function getProviderDefinitions(
     const isSingleton = isSingletonResource(program, model);
     const singletonKey = isSingleton ? getSingletonResourceKey(program, model) : undefined;
 
-    // Expand parameterized segments (e.g. {recordType}) into concrete values.
-    // When a collection name like "{recordType}" maps to an enum path parameter,
-    // we generate a separate resource definition for each enum value
-    // (e.g. dnsZones/A, dnsZones/AAAA, etc.) to match the OpenAPI behavior.
-    const expandedSegmentSets = expandParameterizedSegments(
-      typeSegments,
-      armResource,
-    );
-
-    for (const segments of expandedSegmentSets) {
-      const fullyQualifiedType = `${namespace}/${segments.join("/")}`.toLowerCase();
-
-      if (!provider.resourcesByType[fullyQualifiedType]) {
-        provider.resourcesByType[fullyQualifiedType] = [];
-      }
-
-      const definition: ResourceDefinition = {
-        descriptor: {
-          namespace,
-          typeSegments: segments,
-          apiVersion,
+    const resourcePaths = resolvedMatches.length > 0
+      ? resolvedMatches.map((resolved) => ({
+          typeSegments: getResolvedTypeSegments(
+            resolved.resourceType.types,
+            armResource.collectionName,
+          ),
           readableScopes,
           writableScopes,
-          constantName: singletonKey,
-        },
-        putModel: model,
-        getModel: model,
-        nameProperty: getResourceNameProperty(model),
-      };
+        }))
+      : routeMatches.length > 0
+        ? routeMatches
+        : [{
+            typeSegments: armResource.collectionName
+              ? [armResource.collectionName]
+              : [],
+            readableScopes,
+            writableScopes,
+          }];
+    const seenResourcePaths = new Set<string>();
 
-      provider.resourcesByType[fullyQualifiedType].push(definition);
+    for (const resourcePath of resourcePaths) {
+      if (resourcePath.typeSegments.length === 0) continue;
 
-      // Discover actions for this resource
-      discoverResourceActionsFromArm(armResource, provider, segments);
+      const expandedSegmentSets = expandParameterizedSegments(
+        resourcePath.typeSegments,
+        armResource,
+      );
+
+      for (const segments of expandedSegmentSets) {
+        const fullyQualifiedType = `${namespace}/${segments.join("/")}`.toLowerCase();
+        if (seenResourcePaths.has(fullyQualifiedType)) {
+          continue;
+        }
+        seenResourcePaths.add(fullyQualifiedType);
+
+        if (!provider.resourcesByType[fullyQualifiedType]) {
+          provider.resourcesByType[fullyQualifiedType] = [];
+        }
+
+        const definition: ResourceDefinition = {
+          descriptor: {
+            namespace,
+            typeSegments: segments,
+            apiVersion,
+            readableScopes: resourcePath.readableScopes,
+            writableScopes: resourcePath.writableScopes,
+            constantName: singletonKey,
+          },
+          putModel: model,
+          getModel: model,
+          nameProperty: getResourceNameProperty(model),
+        };
+
+        provider.resourcesByType[fullyQualifiedType].push(definition);
+
+        // Discover actions for this resource
+        discoverResourceActionsFromArm(armResource, provider, segments);
+      }
     }
   }
 
   return [...providers.values()];
+}
+
+interface ResourceRoute {
+  typeSegments: string[];
+  readableScopes: ScopeType;
+  writableScopes: ScopeType;
+}
+
+/**
+ * Determines whether a resolved resource actually represents an instance of
+ * `model`, as opposed to a synthetic entry created because some operation
+ * (e.g. a read-styled action with extra path segments like a "backups" or
+ * "commands" sub-path) shares the resource's route but returns a different
+ * model. `resolveArmResources` groups operations purely by instance path, so
+ * such operations get attached to the outer resource type even though their
+ * request/response body is unrelated to it.
+ */
+function resolvedRepresentsModel(resolved: ResolvedResource, model: Model): boolean {
+  const lifecycleOps = [
+    ...(resolved.operations.lifecycle.createOrUpdate ?? []),
+    ...(resolved.operations.lifecycle.read ?? []),
+    ...(resolved.operations.lifecycle.update ?? []),
+  ];
+  if (lifecycleOps.length === 0) return false;
+
+  return lifecycleOps.some((op) => getOperationResponseModel(op) === model);
+}
+
+function getResolvedTypeSegments(
+  resolvedTypes: string[],
+  collectionName: string | undefined,
+): string[] {
+  const typeSegments = [...resolvedTypes];
+  if (
+    collectionName &&
+    typeSegments.at(-1)?.toLowerCase() !== collectionName.toLowerCase()
+  ) {
+    typeSegments.push(collectionName);
+  }
+
+  return typeSegments;
+}
+
+/**
+ * Finds resource instance GET routes that are intentionally implemented as
+ * custom HTTP operations instead of @armResourceOperations interfaces.
+ */
+function getCustomResourceRoutes(
+  program: Program,
+): Map<Model, ResourceRoute[]> {
+  const routes = new Map<Model, ResourceRoute[]>();
+  const [services, diagnostics] = getAllHttpServices(program);
+  program.reportDiagnostics(diagnostics);
+
+  for (const service of services) {
+    for (const operation of service.operations) {
+      if (operation.verb !== "get" || !isResourceInstancePath(operation.path)) {
+        continue;
+      }
+
+      const typeSegments = getTypeSegmentsFromPath(operation.path);
+      if (!typeSegments) continue;
+
+      for (const responseModel of getResponseBodyModels(operation)) {
+        const existing = routes.get(responseModel) ?? [];
+        if (!existing.some((route) =>
+          route.typeSegments.join("/").toLowerCase() ===
+          typeSegments.join("/").toLowerCase()
+        )) {
+          existing.push({
+            typeSegments,
+            readableScopes: getScopeFromPath(operation.path),
+            writableScopes: ScopeType.None,
+          });
+          routes.set(responseModel, existing);
+        }
+      }
+    }
+  }
+
+  return routes;
+}
+
+function isResourceInstancePath(path: string): boolean {
+  return path.split("/").filter(Boolean).at(-1)?.startsWith("{") === true;
+}
+
+function getTypeSegmentsFromPath(path: string): string[] | undefined {
+  const segments = path.split("/").filter(Boolean);
+  const providerIndex = segments.findIndex(
+    (segment) => segment.toLowerCase() === "providers",
+  );
+  if (providerIndex < 0 || providerIndex + 2 >= segments.length) {
+    return undefined;
+  }
+
+  const resourcePath = segments.slice(providerIndex + 2);
+  const typeSegments = resourcePath.filter((_, index) => index % 2 === 0);
+  return typeSegments.length > 0 ? typeSegments : undefined;
+}
+
+function* getResponseBodyModels(
+  operation: HttpOperation,
+): IterableIterator<Model> {
+  for (const response of operation.responses) {
+    for (const content of response.responses) {
+      if (content.body?.type.kind === "Model") {
+        yield content.body.type;
+      }
+    }
+  }
 }
 
 /**
@@ -316,6 +440,14 @@ function getResourceScopesFromArm(
   armResource: ArmResourceDetails,
   resolvedProvider: ReturnType<typeof resolveArmResources>,
 ): { readableScopes: ScopeType; writableScopes: ScopeType } {
+  const declaredOperations = [...getArmResourceOperationList(
+    _program,
+    armResource.typespecType,
+  )];
+  if (armResource.name === "TestType1") {
+    console.error("scope-debug", declaredOperations.map((operation) => [operation.kind, operation.path, getHttpOperation(_program, operation.operation)[0].path]));
+  }
+
   // Try to find resolved resource details with path information
   const resolvedResources = resolvedProvider.resources ?? [];
   const matched = resolvedResources.filter(
@@ -343,31 +475,68 @@ function getResourceScopesFromArm(
       }
     }
 
-    // If we found specific scope info, use it
-    if (readableScopes !== ScopeType.None || writableScopes !== ScopeType.None) {
-      return { readableScopes, writableScopes };
+    // Resolved metadata can omit lifecycle operations registered through legacy
+    // helpers, so merge it with the authoritative ARM operation metadata below.
+    for (const operation of declaredOperations) {
+      const scope = getArmOperationScope(_program, operation);
+      if (operation.kind === "read") {
+        readableScopes |= scope;
+      } else if (operation.kind === "createOrUpdate" || operation.kind === "update") {
+        writableScopes |= scope;
+      }
     }
+
+    if (armResource.operations.lifecycle.createOrUpdate || armResource.operations.lifecycle.update) {
+      writableScopes |= getDefaultScopeFromKind(armResource.kind);
+    }
+
+    if (armResource.name === "TestType1") console.error("scope-result", readableScopes, writableScopes);
+    return { readableScopes, writableScopes };
   }
 
   // Fall back: use lifecycle operations from ArmResourceDetails
-  const ops = armResource.operations;
-  const hasRead = !!ops.lifecycle.read;
-  const hasWrite = !!ops.lifecycle.createOrUpdate;
+  const hasRead = declaredOperations.some((operation) => operation.kind === "read");
+  const hasWrite = declaredOperations.some(
+    (operation) => operation.kind === "createOrUpdate" || operation.kind === "update",
+  );
 
   // Determine scope from the resource kind and any available path
   let scope = getDefaultScopeFromKind(armResource.kind);
 
   // Refine scope from read operation path if available
-  if (ops.lifecycle.read) {
-    scope = getScopeFromPath(ops.lifecycle.read.path);
-  } else if (ops.lifecycle.createOrUpdate) {
-    scope = getScopeFromPath(ops.lifecycle.createOrUpdate.path);
+  const firstLifecycleOperation = declaredOperations.find(
+    (operation) => operation.kind === "read" || operation.kind === "createOrUpdate" || operation.kind === "update",
+  );
+  if (firstLifecycleOperation) {
+    scope = getArmOperationScope(_program, firstLifecycleOperation);
   }
 
   return {
     readableScopes: hasRead ? scope : ScopeType.None,
     writableScopes: hasWrite ? scope : ScopeType.None,
   };
+}
+
+function getArmOperationScope(
+  program: Program,
+  operation: {
+    path?: string;
+    operation: Operation;
+    resourceKind?: "legacy" | "legacy-extension";
+  },
+): ScopeType {
+  if (operation.path) {
+    return getScopeFromPath(operation.path);
+  }
+
+  const [httpOperation, diagnostics] = getHttpOperation(
+    program,
+    operation.operation,
+  );
+  program.reportDiagnostics(diagnostics);
+  return httpOperation.path
+    ? getScopeFromPath(httpOperation.path)
+    : getDefaultScopeFromKind(operation.resourceKind ?? "Proxy");
 }
 
 /**

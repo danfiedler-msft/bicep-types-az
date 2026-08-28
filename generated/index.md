@@ -14564,7 +14564,6 @@
 * **Link**: [2025-10-15](cosmos-db/microsoft.documentdb/2025-10-15/types.md#resource-microsoftdocumentdbdatabaseaccountscassandrakeyspacesthroughputsettings2025-10-15)
 * **Link**: [2025-11-01-preview](cosmos-db/microsoft.documentdb/2025-11-01-preview/types.md#resource-microsoftdocumentdbdatabaseaccountscassandrakeyspacesthroughputsettings2025-11-01-preview)
 * **Link**: [2026-03-15](cosmos-db/microsoft.documentdb/2026-03-15/types.md#resource-microsoftdocumentdbdatabaseaccountscassandrakeyspacesthroughputsettings2026-03-15)
-* **Link**: [2026-04-01-preview](_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.md#resource-microsoftdocumentdbdatabaseaccountscassandrakeyspacesthroughputsettings2026-04-01-preview)
 
 ### microsoft.documentdb/databaseaccounts/cassandrakeyspaces/views
 * **Link**: [2021-07-01-preview](cosmos-db/microsoft.documentdb/2021-07-01-preview/types.md#resource-microsoftdocumentdbdatabaseaccountscassandrakeyspacesviews2021-07-01-preview)
@@ -15914,6 +15913,15 @@
 * **Link**: [2026-03-15](cosmos-db/microsoft.documentdb/2026-03-15/types.md#resource-microsoftdocumentdblocationsrestorabledatabaseaccounts2026-03-15)
 * **Link**: [2026-04-01-preview](_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.md#resource-microsoftdocumentdblocationsrestorabledatabaseaccounts2026-04-01-preview)
 
+### microsoft.documentdb/locations/softdeleteddatabaseaccounts
+* **Link**: [2026-04-01-preview](_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.md#resource-microsoftdocumentdblocationssoftdeleteddatabaseaccounts2026-04-01-preview)
+
+### microsoft.documentdb/locations/softdeleteddatabaseaccounts/softdeletedsqldatabases
+* **Link**: [2026-04-01-preview](_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.md#resource-microsoftdocumentdblocationssoftdeleteddatabaseaccountssoftdeletedsqldatabases2026-04-01-preview)
+
+### microsoft.documentdb/locations/softdeleteddatabaseaccounts/softdeletedsqldatabases/softdeletedsqlcontainers
+* **Link**: [2026-04-01-preview](_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.md#resource-microsoftdocumentdblocationssoftdeleteddatabaseaccountssoftdeletedsqldatabasessoftdeletedsqlcontainers2026-04-01-preview)
+
 ### microsoft.documentdb/mongoclusters
 * **Link**: [2023-03-01-preview](cosmos-db/microsoft.documentdb/2023-03-01-preview/types.md#resource-microsoftdocumentdbmongoclusters2023-03-01-preview)
 * **Link**: [2023-03-15-preview](cosmos-db/microsoft.documentdb/2023-03-15-preview/types.md#resource-microsoftdocumentdbmongoclusters2023-03-15-preview)
@@ -15991,6 +15999,9 @@
 * **Link**: [2025-05-01-preview](cosmos-db/microsoft.documentdb/2025-05-01-preview/types.md#resource-microsoftdocumentdbthroughputpoolsthroughputpoolaccounts2025-05-01-preview)
 * **Link**: [2025-11-01-preview](cosmos-db/microsoft.documentdb/2025-11-01-preview/types.md#resource-microsoftdocumentdbthroughputpoolsthroughputpoolaccounts2025-11-01-preview)
 * **Link**: [2026-04-01-preview](_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.md#resource-microsoftdocumentdbthroughputpoolsthroughputpoolaccounts2026-04-01-preview)
+
+### microsoft.documentdb/throughputsettings
+* **Link**: [2026-04-01-preview](_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.md#resource-microsoftdocumentdbthroughputsettings2026-04-01-preview)
 
 ## microsoft.domainregistration
 ### microsoft.domainregistration/domains

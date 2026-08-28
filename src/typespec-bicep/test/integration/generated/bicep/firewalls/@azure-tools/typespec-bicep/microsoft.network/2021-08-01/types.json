@@ -1456,7 +1456,7 @@
       "$ref": "#/3"
     },
     "readableScopes": 8,
-    "writableScopes": 8
+    "writableScopes": 0
   },
   {
     "$type": "StringLiteralType",
@@ -2253,7 +2253,7 @@
       "$ref": "#/124"
     },
     "readableScopes": 8,
-    "writableScopes": 8
+    "writableScopes": 0
   },
   {
     "$type": "StringLiteralType",
@@ -3130,6 +3130,6 @@
       "$ref": "#/182"
     },
     "readableScopes": 8,
-    "writableScopes": 8
+    "writableScopes": 0
   }
 ]

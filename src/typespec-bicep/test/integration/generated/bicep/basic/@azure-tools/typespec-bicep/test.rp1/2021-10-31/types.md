@@ -2,7 +2,7 @@
 
 ## Resource Test.Rp1/discriminatedUnionTestType@2021-10-31
 * **Readable Scope(s)**: ResourceGroup
-* **Writable Scope(s)**: ResourceGroup
+* **Writable Scope(s)**: None
 ### Properties
 * **apiVersion**: '2021-10-31' (ReadOnly, DeployTimeConstant): The resource api version
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
@@ -28,7 +28,7 @@
 
 ## Resource Test.Rp1/subscriptionScopeType@2021-10-31
 * **Readable Scope(s)**: Subscription
-* **Writable Scope(s)**: Subscription
+* **Writable Scope(s)**: None
 ### Properties
 * **apiVersion**: '2021-10-31' (ReadOnly, DeployTimeConstant): The resource api version
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
@@ -41,7 +41,7 @@
 
 ## Resource Test.Rp1/tenantScopeType@2021-10-31
 * **Readable Scope(s)**: Tenant
-* **Writable Scope(s)**: Tenant
+* **Writable Scope(s)**: None
 ### Properties
 * **apiVersion**: '2021-10-31' (ReadOnly, DeployTimeConstant): The resource api version
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
@@ -54,7 +54,7 @@
 
 ## Resource Test.Rp1/testType1@2021-10-31
 * **Readable Scope(s)**: ResourceGroup
-* **Writable Scope(s)**: ResourceGroup
+* **Writable Scope(s)**: None
 ### Properties
 * **apiVersion**: '2021-10-31' (ReadOnly, DeployTimeConstant): The resource api version
 * **id**: string (ReadOnly, DeployTimeConstant): The resource id
@@ -91,6 +91,14 @@
 * **bar**: string: The bar property
 * **foo**: string: The foo property
 
+### BranchWithInheritedProps
+#### Properties
+* **bar**: string: The bar property
+* **baz**: string: The baz property
+* **foo**: string: The foo property
+* **quux**: string: A property defined inline
+* **type**: 'inherited' (Required)
+
 ### BranchWithAllInlineProps
 #### Properties
 * **bar**: string: The bar property
@@ -98,22 +106,14 @@
 * **fizz**: string: The fizz property
 * **foo**: string: The foo property
 * **pop**: string: The pop property
-* **type**: 'BranchWithAllInlineProps' (Required)
-
-### BranchWithInheritedProps
-#### Properties
-* **bar**: string: The bar property
-* **baz**: string: The baz property
-* **foo**: string: The foo property
-* **quux**: string: A property defined inline
-* **type**: 'BranchWithInheritedProps' (Required)
+* **type**: 'inline' (Required)
 
 ### BranchWithOverride
 #### Properties
 * **bar**: string: The bar property
 * **foo**: string: The foo property
 * **fooOverride**: int: The overridden foo integer property
-* **type**: 'BranchWithOverride' (Required)
+* **type**: 'override' (Required)
 
 
 ## EncryptionProperties
@@ -183,7 +183,7 @@
 * **encryptionProperties**: [EncryptionProperties](#encryptionproperties): TestType1 encryption properties
 * **intWithDefaultValue**: int: An integer with a default value
 * **locationData**: [LocationData](#locationdata) (ReadOnly): Metadata pertaining to the geographic location of the resource.
-* **password**: string
+* **password**: string {sensitive}
 * **percentageProperty**: int (ReadOnly): A percentage property
 * **special.char-property**: string: A property with special characters in its name
 * **stringEnum**: 'Bar' | 'Foo' | string: Description for a basic enum property.

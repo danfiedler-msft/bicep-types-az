@@ -240,7 +240,7 @@
       },
       "password": {
         "type": {
-          "$ref": "#/2"
+          "$ref": "#/26"
         },
         "flags": 0
       },
@@ -253,7 +253,7 @@
       },
       "intWithDefaultValue": {
         "type": {
-          "$ref": "#/26"
+          "$ref": "#/27"
         },
         "flags": 0,
         "description": "An integer with a default value"
@@ -267,7 +267,7 @@
       },
       "locationData": {
         "type": {
-          "$ref": "#/27"
+          "$ref": "#/28"
         },
         "flags": 2,
         "description": "Metadata pertaining to the geographic location of the resource."
@@ -295,7 +295,7 @@
       },
       "percentageProperty": {
         "type": {
-          "$ref": "#/26"
+          "$ref": "#/27"
         },
         "flags": 2,
         "description": "A percentage property"
@@ -387,6 +387,10 @@
     }
   },
   {
+    "$type": "StringType",
+    "sensitive": true
+  },
+  {
     "$type": "IntegerType"
   },
   {
@@ -430,7 +434,7 @@
       "$ref": "#/4"
     },
     "readableScopes": 8,
-    "writableScopes": 8
+    "writableScopes": 0
   },
   {
     "$type": "StringLiteralType",
@@ -460,14 +464,14 @@
       },
       "type": {
         "type": {
-          "$ref": "#/29"
+          "$ref": "#/30"
         },
         "flags": 10,
         "description": "The resource type"
       },
       "apiVersion": {
         "type": {
-          "$ref": "#/30"
+          "$ref": "#/31"
         },
         "flags": 10,
         "description": "The resource api version"
@@ -495,7 +499,7 @@
       },
       "properties": {
         "type": {
-          "$ref": "#/32"
+          "$ref": "#/33"
         },
         "flags": 0,
         "description": "The resource-specific properties for this resource."
@@ -508,7 +512,7 @@
     "properties": {
       "plan": {
         "type": {
-          "$ref": "#/33"
+          "$ref": "#/34"
         },
         "flags": 2,
         "description": "A plan property"
@@ -546,7 +550,7 @@
     "$type": "ResourceType",
     "name": "Test.Rp1/readOnlyTestType@2021-10-31",
     "body": {
-      "$ref": "#/31"
+      "$ref": "#/32"
     },
     "readableScopes": 8,
     "writableScopes": 0
@@ -579,14 +583,14 @@
       },
       "type": {
         "type": {
-          "$ref": "#/35"
+          "$ref": "#/36"
         },
         "flags": 10,
         "description": "The resource type"
       },
       "apiVersion": {
         "type": {
-          "$ref": "#/36"
+          "$ref": "#/37"
         },
         "flags": 10,
         "description": "The resource api version"
@@ -614,7 +618,7 @@
       },
       "properties": {
         "type": {
-          "$ref": "#/38"
+          "$ref": "#/39"
         },
         "flags": 0,
         "description": "The resource-specific properties for this resource."
@@ -638,7 +642,7 @@
     "$type": "ResourceType",
     "name": "Test.Rp1/writeOnlyTestType@2021-10-31",
     "body": {
-      "$ref": "#/37"
+      "$ref": "#/38"
     },
     "readableScopes": 0,
     "writableScopes": 8
@@ -671,14 +675,14 @@
       },
       "type": {
         "type": {
-          "$ref": "#/40"
+          "$ref": "#/41"
         },
         "flags": 10,
         "description": "The resource type"
       },
       "apiVersion": {
         "type": {
-          "$ref": "#/41"
+          "$ref": "#/42"
         },
         "flags": 10,
         "description": "The resource api version"
@@ -706,7 +710,7 @@
       },
       "properties": {
         "type": {
-          "$ref": "#/43"
+          "$ref": "#/44"
         },
         "flags": 0,
         "description": "The resource-specific properties for this resource."
@@ -730,10 +734,10 @@
     "$type": "ResourceType",
     "name": "Test.Rp1/tenantScopeType@2021-10-31",
     "body": {
-      "$ref": "#/42"
+      "$ref": "#/43"
     },
     "readableScopes": 1,
-    "writableScopes": 1
+    "writableScopes": 0
   },
   {
     "$type": "StringLiteralType",
@@ -763,14 +767,14 @@
       },
       "type": {
         "type": {
-          "$ref": "#/45"
+          "$ref": "#/46"
         },
         "flags": 10,
         "description": "The resource type"
       },
       "apiVersion": {
         "type": {
-          "$ref": "#/46"
+          "$ref": "#/47"
         },
         "flags": 10,
         "description": "The resource api version"
@@ -798,7 +802,7 @@
       },
       "properties": {
         "type": {
-          "$ref": "#/48"
+          "$ref": "#/49"
         },
         "flags": 0,
         "description": "The resource-specific properties for this resource."
@@ -822,10 +826,10 @@
     "$type": "ResourceType",
     "name": "Test.Rp1/subscriptionScopeType@2021-10-31",
     "body": {
-      "$ref": "#/47"
+      "$ref": "#/48"
     },
     "readableScopes": 4,
-    "writableScopes": 4
+    "writableScopes": 0
   },
   {
     "$type": "StringLiteralType",
@@ -855,14 +859,14 @@
       },
       "type": {
         "type": {
-          "$ref": "#/50"
+          "$ref": "#/51"
         },
         "flags": 10,
         "description": "The resource type"
       },
       "apiVersion": {
         "type": {
-          "$ref": "#/51"
+          "$ref": "#/52"
         },
         "flags": 10,
         "description": "The resource api version"
@@ -890,7 +894,7 @@
       },
       "properties": {
         "type": {
-          "$ref": "#/53"
+          "$ref": "#/54"
         },
         "flags": 0,
         "description": "The resource-specific properties for this resource."
@@ -918,14 +922,14 @@
       }
     },
     "elements": {
-      "BranchWithInheritedProps": {
-        "$ref": "#/54"
+      "inherited": {
+        "$ref": "#/55"
       },
-      "BranchWithAllInlineProps": {
-        "$ref": "#/57"
+      "inline": {
+        "$ref": "#/58"
       },
-      "BranchWithOverride": {
-        "$ref": "#/60"
+      "override": {
+        "$ref": "#/61"
       }
     }
   },
@@ -949,7 +953,7 @@
       },
       "type": {
         "type": {
-          "$ref": "#/56"
+          "$ref": "#/57"
         },
         "flags": 1
       },
@@ -975,7 +979,7 @@
   },
   {
     "$type": "StringLiteralType",
-    "value": "BranchWithInheritedProps"
+    "value": "inherited"
   },
   {
     "$type": "ObjectType",
@@ -997,7 +1001,7 @@
       },
       "type": {
         "type": {
-          "$ref": "#/59"
+          "$ref": "#/60"
         },
         "flags": 1
       },
@@ -1030,7 +1034,7 @@
   },
   {
     "$type": "StringLiteralType",
-    "value": "BranchWithAllInlineProps"
+    "value": "inline"
   },
   {
     "$type": "ObjectType",
@@ -1052,13 +1056,13 @@
       },
       "type": {
         "type": {
-          "$ref": "#/62"
+          "$ref": "#/63"
         },
         "flags": 1
       },
       "fooOverride": {
         "type": {
-          "$ref": "#/26"
+          "$ref": "#/27"
         },
         "flags": 0,
         "description": "The overridden foo integer property"
@@ -1071,16 +1075,16 @@
   },
   {
     "$type": "StringLiteralType",
-    "value": "BranchWithOverride"
+    "value": "override"
   },
   {
     "$type": "ResourceType",
     "name": "Test.Rp1/discriminatedUnionTestType@2021-10-31",
     "body": {
-      "$ref": "#/52"
+      "$ref": "#/53"
     },
     "readableScopes": 8,
-    "writableScopes": 8
+    "writableScopes": 0
   },
   {
     "$type": "ObjectType",
@@ -1095,7 +1099,7 @@
       },
       "locationData": {
         "type": {
-          "$ref": "#/27"
+          "$ref": "#/28"
         },
         "flags": 0,
         "description": "Location data"
@@ -1121,10 +1125,10 @@
     "resourceType": "Test.Rp1/testType1",
     "apiVersion": "2021-10-31",
     "output": {
-      "$ref": "#/65"
+      "$ref": "#/66"
     },
     "input": {
-      "$ref": "#/64"
+      "$ref": "#/65"
     }
   }
 ]

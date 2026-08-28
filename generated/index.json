@@ -106,43 +106,52 @@
       "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/765"
     },
     "Microsoft.DocumentDB/cassandraClusters@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/812"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/813"
     },
     "Microsoft.DocumentDB/garnetClusters@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/835"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/836"
     },
     "Microsoft.DocumentDB/cassandraClusters/dataCenters@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/850"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/851"
     },
     "Microsoft.DocumentDB/databaseAccounts/mongodbRoleDefinitions@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/864"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/865"
     },
     "Microsoft.DocumentDB/databaseAccounts/mongodbUserDefinitions@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/870"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/871"
     },
     "Microsoft.DocumentDB/databaseAccounts/notebookWorkspaces@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/877"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/878"
     },
     "Microsoft.DocumentDB/databaseAccounts/privateLinkResources@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/884"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/885"
     },
     "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/894"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/895"
     },
     "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/899"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/900"
     },
     "Microsoft.DocumentDB/locations/restorableDatabaseAccounts@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/913"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/914"
     },
     "Microsoft.DocumentDB/databaseAccounts/services@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1045"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1046"
     },
-    "Microsoft.DocumentDB/databaseAccounts/cassandraKeyspaces/throughputSettings@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1057"
+    "Microsoft.DocumentDB/throughputSettings@2026-04-01-preview": {
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1058"
     },
     "Microsoft.DocumentDB/databaseAccounts/networkSecurityPerimeterConfigurations@2026-04-01-preview": {
-      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1105"
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1106"
+    },
+    "Microsoft.DocumentDB/locations/softDeletedDatabaseAccounts@2026-04-01-preview": {
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1117"
+    },
+    "Microsoft.DocumentDB/locations/softDeletedDatabaseAccounts/softDeletedSqlDatabases@2026-04-01-preview": {
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1124"
+    },
+    "Microsoft.DocumentDB/locations/softDeletedDatabaseAccounts/softDeletedSqlDatabases/softDeletedSqlContainers@2026-04-01-preview": {
+      "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1130"
     },
     "Microsoft.Network/dnsZones@2023-07-01-preview": {
       "$ref": "_tsp/dns/microsoft.network/2023-07-01-preview/types.json#/29"
@@ -103496,13 +103505,13 @@
     "microsoft.documentdb/databaseaccounts": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1109"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1134"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1128"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1153"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1131"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1156"
         }
       ],
       "2015-04-01": [
@@ -104636,16 +104645,16 @@
     "microsoft.documentdb/databaseaccounts/copyjobs": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1139"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1164"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1140"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1165"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1141"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1166"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1142"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1167"
         }
       ],
       "2025-05-01-preview": [
@@ -104680,7 +104689,7 @@
     "microsoft.documentdb/databaseaccounts/sqldatabases": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1147"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1172"
         }
       ],
       "2023-03-15-preview": [
@@ -104732,10 +104741,10 @@
     "microsoft.documentdb/databaseaccounts/sqldatabases/containers": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1148"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1173"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1152"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1177"
         }
       ],
       "2021-04-01-preview": [
@@ -104949,7 +104958,7 @@
     "microsoft.documentdb/databaseaccounts/mongodbdatabases": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1153"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1178"
         }
       ],
       "2023-03-15-preview": [
@@ -105001,10 +105010,10 @@
     "microsoft.documentdb/databaseaccounts/mongodbdatabases/collections": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1154"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1179"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1155"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1180"
         }
       ],
       "2021-10-15-preview": [
@@ -105203,7 +105212,7 @@
     "microsoft.documentdb/databaseaccounts/tables": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1156"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1181"
         }
       ],
       "2021-11-15-preview": [
@@ -105340,7 +105349,7 @@
     "microsoft.documentdb/databaseaccounts/gremlindatabases/graphs": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1157"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1182"
         }
       ],
       "2021-11-15-preview": [
@@ -105477,16 +105486,16 @@
     "microsoft.documentdb/databaseaccounts/datatransferjobs": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1159"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1184"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1160"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1185"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1161"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1186"
         },
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1162"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1187"
         }
       ],
       "2022-02-15-preview": [
@@ -105665,7 +105674,7 @@
     "microsoft.documentdb/cassandraclusters": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1173"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1198"
         }
       ],
       "2021-03-01-preview": [
@@ -106047,7 +106056,7 @@
     "microsoft.documentdb/databaseaccounts/notebookworkspaces": {
       "2026-04-01-preview": [
         {
-          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1175"
+          "$ref": "_tsp/cosmos-db/microsoft.documentdb/2026-04-01-preview/types.json#/1200"
         }
       ],
       "2019-08-01": [

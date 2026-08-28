@@ -3,6 +3,7 @@
 
 import {
   Enum,
+  getDiscriminatedUnionFromInheritance,
   getDiscriminator,
   getDoc,
   getLifecycleVisibilityEnum,
@@ -11,6 +12,7 @@ import {
   getPattern,
   getVisibilityForClass,
   IntrinsicType,
+  isSecret,
   Model,
   ModelProperty,
   Program,
@@ -255,6 +257,7 @@ export function generateTypes(
       }
 
       const { descriptor, bodyType } = output;
+      if (fullyQualifiedType === "Test.Rp1/testType1") console.error("type-result", descriptor.readableScopes, descriptor.writableScopes);
       factory.addResourceType(
         `${getFullyQualifiedType(descriptor)}@${descriptor.apiVersion}`,
         bodyType,
@@ -315,19 +318,39 @@ export function generateTypes(
    * (@minLength, @maxLength, @pattern decorators on the property itself).
    */
   function parsePropertyType(prop: ModelProperty): TypeReference | undefined {
-    // Check if the property itself has string constraint decorators
-    const minLen = getMinLength(program, prop);
-    const maxLen = getMaxLength(program, prop);
-    const pattern = getNonEmptyPattern(prop);
+    const sensitive =
+      isSecret(program, prop) || isSecret(program, prop.type)
+        ? true
+        : undefined;
+    const baseType = prop.type;
+    const minLen =
+      getMinLength(program, prop) ??
+      (baseType.kind === "Scalar"
+        ? getMinLength(program, baseType)
+        : undefined);
+    const maxLen =
+      getMaxLength(program, prop) ??
+      (baseType.kind === "Scalar"
+        ? getMaxLength(program, baseType)
+        : undefined);
+    const pattern =
+      getNonEmptyPattern(prop) ??
+      (baseType.kind === "Scalar"
+        ? getNonEmptyPattern(baseType)
+        : undefined);
 
-    if (minLen !== undefined || maxLen !== undefined || pattern !== undefined) {
+    if (
+      sensitive ||
+      minLen !== undefined ||
+      maxLen !== undefined ||
+      pattern !== undefined
+    ) {
       // If the underlying type is a string-like scalar, generate a constrained string
-      const baseType = prop.type;
       if (
         (baseType.kind === "Scalar" && isStringScalar(baseType)) ||
         (baseType.kind === "Model" && baseType.name === "string")
       ) {
-        return factory.addStringType(undefined, minLen, maxLen, pattern);
+        return factory.addStringType(sensitive, minLen, maxLen, pattern);
       }
     }
 
@@ -406,7 +429,12 @@ export function generateTypes(
       }
       const valueType = model.indexer?.value;
       const additionalProps = valueType ? parseType(valueType) : undefined;
-      const ref = factory.addObjectType(modelName || "Record", {}, additionalProps);
+      const ref = factory.addObjectType(
+        modelName || "Record",
+        {},
+        additionalProps,
+        isSecret(program, model) || undefined,
+      );
       namedDefinitions.set(modelName, ref);
       return ref;
     }
@@ -439,6 +467,7 @@ export function generateTypes(
         modelName,
         properties,
         additionalProperties,
+        isSecret(program, model) || undefined,
       );
     }
 
@@ -479,6 +508,7 @@ export function generateTypes(
     const minLen = getMinLength(program, scalar);
     const maxLen = getMaxLength(program, scalar);
     const pattern = getNonEmptyPattern(scalar);
+    const sensitive = isSecret(program, scalar) ? true : undefined;
 
     // Walk the scalar hierarchy to find a built-in base type
     let current: Scalar | undefined = scalar;
@@ -489,7 +519,7 @@ export function generateTypes(
         case "uuid":
         case "duration":
         case "armResourceIdentifier":
-          return factory.addStringType(undefined, minLen, maxLen, pattern);
+          return factory.addStringType(sensitive, minLen, maxLen, pattern);
         case "boolean":
           return factory.addBooleanType();
         case "int8":
@@ -511,12 +541,12 @@ export function generateTypes(
         case "numeric":
           return factory.addIntegerType(); // Bicep doesn't have float; use int
         case "bytes":
-          return factory.addStringType(undefined, minLen, maxLen, pattern); // Base64-encoded
+          return factory.addStringType(sensitive, minLen, maxLen, pattern); // Base64-encoded
         case "plainDate":
         case "plainTime":
         case "utcDateTime":
         case "offsetDateTime":
-          return factory.addStringType(undefined, minLen, maxLen, pattern);
+          return factory.addStringType(sensitive, minLen, maxLen, pattern);
         case "null":
           return factory.addNullType();
       }
@@ -640,16 +670,14 @@ export function generateTypes(
     discriminatedObjectType: DiscriminatedObjectType,
     model: Model,
   ): void {
-    // Find all derived models that have the discriminator value set
-    if (!model.derivedModels) return;
+    const discriminator = getDiscriminator(program, model);
+    if (!discriminator) return;
 
-    for (const derived of model.derivedModels) {
-      const discriminatorValue = getDiscriminatorValue(
-        derived,
-        discriminatedObjectType.discriminator,
-      );
-      if (!discriminatorValue) continue;
+    const [discriminatedUnion, diagnostics] =
+      getDiscriminatedUnionFromInheritance(model, discriminator);
+    program.reportDiagnostics(diagnostics);
 
+    for (const [discriminatorValue, derived] of discriminatedUnion.variants) {
       const objectTypeRef = parseModelType(derived);
       if (objectTypeRef === undefined) continue;
 
@@ -670,41 +698,6 @@ export function generateTypes(
           ObjectTypePropertyFlags.Required,
         );
     }
-  }
-
-  function getDiscriminatorValue(
-    model: Model,
-    discriminatorPropertyName: string,
-  ): string | undefined {
-    const prop = model.properties.get(discriminatorPropertyName);
-    if (!prop) return undefined;
-
-    // Check if the property type is a string literal
-    if (prop.type.kind === "Scalar" && prop.defaultValue !== undefined) {
-      return String(prop.defaultValue);
-    }
-
-    // Check for literal type
-    if (
-      prop.type.kind === "Intrinsic" ||
-      (prop.type.kind === "Scalar" && prop.type.name === "string")
-    ) {
-      // Try to get enum value from the model name as a convention
-      return model.name;
-    }
-
-    // Check if the type wraps a string literal
-    if (prop.type.kind === "Union") {
-      const variants = [...prop.type.variants.values()];
-      if (variants.length === 1) {
-        const v = variants[0].type;
-        if (v.kind === "Scalar") {
-          return model.name;
-        }
-      }
-    }
-
-    return model.name;
   }
 
   // --- Model helpers ---
@@ -793,10 +786,14 @@ export function generateTypes(
     flags: ObjectTypePropertyFlags,
     description?: string,
   ): ObjectTypeProperty {
+    const normalizedDescription = description
+      ?.replaceAll('\\"', '"')
+      .trim();
+
     return {
       type,
       flags,
-      description: description?.trim() || undefined,
+      description: normalizedDescription || undefined,
     };
   }
 
