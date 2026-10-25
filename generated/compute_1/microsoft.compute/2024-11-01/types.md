@@ -693,7 +693,7 @@
 ### Properties
 * **capacityReservations**: [SubResourceReadOnly](#subresourcereadonly)[] (ReadOnly): A list of all capacity reservation resource ids that belong to capacity reservation group.
 * **instanceView**: [CapacityReservationGroupInstanceView](#capacityreservationgroupinstanceview) (ReadOnly): The capacity reservation group instance view which has the list of instance views for all the capacity reservations that belong to the capacity reservation group.
-* **sharingProfile**: [ResourceSharingProfile](#resourcesharingprofile): Specifies the settings to enable sharing across subscriptions for the capacity reservation group resource. The capacity reservation group resource can generally be shared across subscriptions belonging to a single Azure AAD tenant or across AAD tenants if there is a trust relationship established between the tenants.  Block capacity reservation does not support sharing across subscriptions. **Note:** Minimum api-version: 2023-09-01. Please refer to https://aka.ms/computereservationsharing for more details.
+* **sharingProfile**: [ResourceSharingProfile](#resourcesharingprofile): Specifies the settings to enable sharing across subscriptions for the capacity reservation group resource. The capacity reservation group resource can be shared only across subscriptions belonging to the same Microsoft Entra ID tenant. Sharing across tenants is not supported. Block capacity reservation does not support sharing across subscriptions. **Note:** Minimum api-version: 2023-09-01. Please refer to https://aka.ms/computereservationsharing for more details.
 * **virtualMachinesAssociated**: [SubResourceReadOnly](#subresourcereadonly)[] (ReadOnly): A list of references to all virtual machines associated to the capacity reservation group.
 
 ## CapacityReservationInstanceView
@@ -1207,7 +1207,7 @@
 ## RestorePointInstanceView
 ### Properties
 * **diskRestorePoints**: [DiskRestorePointInstanceView](#diskrestorepointinstanceview)[]: The disk restore points information.
-* **statuses**: [InstanceViewStatus](#instanceviewstatus)[]: The resource status information.
+* **statuses**: [InstanceViewStatus](#instanceviewstatus)[]: The aggregate status information for the restore point. The list may include separate aggregate entries for replication and, in supported API versions, Instant Access, as applicable. For more information about Instant Access, see [Use virtual machine restore points](https://learn.microsoft.com/azure/virtual-machines/virtual-machines-create-restore-points#instant-access).
 
 ## RestorePointProperties
 ### Properties
