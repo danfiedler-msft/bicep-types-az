@@ -9,10 +9,6 @@
   },
   {
     "$type": "StringLiteralType",
-    "value": "Astronomer.Astro"
-  },
-  {
-    "$type": "StringLiteralType",
     "value": "Commvault.ContentStore"
   },
   {
@@ -30,6 +26,10 @@
   {
     "$type": "StringLiteralType",
     "value": "Informatica.DataManagement"
+  },
+  {
+    "$type": "StringLiteralType",
+    "value": "Kore.AgentPlatform"
   },
   {
     "$type": "StringLiteralType",
