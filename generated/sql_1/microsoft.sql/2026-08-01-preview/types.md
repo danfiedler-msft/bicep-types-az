@@ -1635,6 +1635,11 @@ az sql elastic-pool list-editions -l <location> -o table
 * **ApiVersion**: 2026-08-01-preview
 * **Output**: [LongTermRetentionBackup](#longtermretentionbackup)
 
+## Function lockTimeBasedImmutability (Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups@2026-08-01-preview)
+* **Resource**: Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups
+* **ApiVersion**: 2026-08-01-preview
+* **Output**: [ManagedInstanceLongTermRetentionBackup](#managedinstancelongtermretentionbackup)
+
 ## Function move (Microsoft.Sql/servers/databases@2026-08-01-preview)
 * **Resource**: Microsoft.Sql/servers/databases
 * **ApiVersion**: 2026-08-01-preview
@@ -1691,10 +1696,20 @@ az sql elastic-pool list-editions -l <location> -o table
 * **ApiVersion**: 2026-08-01-preview
 * **Output**: [LongTermRetentionBackup](#longtermretentionbackup)
 
+## Function removeLegalHoldImmutability (Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups@2026-08-01-preview)
+* **Resource**: Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups
+* **ApiVersion**: 2026-08-01-preview
+* **Output**: [ManagedInstanceLongTermRetentionBackup](#managedinstancelongtermretentionbackup)
+
 ## Function removeTimeBasedImmutability (Microsoft.Sql/locations/longTermRetentionServers/longTermRetentionDatabases/longTermRetentionBackups@2026-08-01-preview)
 * **Resource**: Microsoft.Sql/locations/longTermRetentionServers/longTermRetentionDatabases/longTermRetentionBackups
 * **ApiVersion**: 2026-08-01-preview
 * **Output**: [LongTermRetentionBackup](#longtermretentionbackup)
+
+## Function removeTimeBasedImmutability (Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups@2026-08-01-preview)
+* **Resource**: Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups
+* **ApiVersion**: 2026-08-01-preview
+* **Output**: [ManagedInstanceLongTermRetentionBackup](#managedinstancelongtermretentionbackup)
 
 ## Function restorePoints (Microsoft.Sql/servers/databases@2026-08-01-preview)
 * **Resource**: Microsoft.Sql/servers/databases
@@ -1736,6 +1751,11 @@ az sql elastic-pool list-editions -l <location> -o table
 * **Resource**: Microsoft.Sql/locations/longTermRetentionServers/longTermRetentionDatabases/longTermRetentionBackups
 * **ApiVersion**: 2026-08-01-preview
 * **Output**: [LongTermRetentionBackup](#longtermretentionbackup)
+
+## Function setLegalHoldImmutability (Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups@2026-08-01-preview)
+* **Resource**: Microsoft.Sql/locations/longTermRetentionManagedInstances/longTermRetentionDatabases/longTermRetentionManagedInstanceBackups
+* **ApiVersion**: 2026-08-01-preview
+* **Output**: [ManagedInstanceLongTermRetentionBackup](#managedinstancelongtermretentionbackup)
 
 ## Function setRole (Microsoft.Sql/managedInstances/distributedAvailabilityGroups@2026-08-01-preview)
 * **Resource**: Microsoft.Sql/managedInstances/distributedAvailabilityGroups
@@ -2590,7 +2610,14 @@ PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 
 For more information, see [Diagnostic Settings REST API](https://go.microsoft.com/fwlink/?linkid=2033207)
 or [Diagnostic Settings PowerShell](https://go.microsoft.com/fwlink/?linkid=2033043)
-* **isDevopsAuditEnabled**: bool: Specifies the state of devops audit. If state is Enabled, devops logs will be sent to Azure Monitor.
+* **isDevopsAuditEnabled**: bool: **Note:** This field will soon be deprecated. Going forward, use the dedicated Server DevOps Audit Settings APIs to configure DevOps audit. See:
+
+- [Server DevOps Audit Settings - Create Or Update](https://learn.microsoft.com/en-us/rest/api/sql/server-devops-audit-settings/create-or-update)
+- [Server DevOps Audit Settings - Get](https://learn.microsoft.com/en-us/rest/api/sql/server-devops-audit-settings/get)
+
+---
+
+Specifies the state of devops audit. If state is Enabled, devops logs will be sent to Azure Monitor.
 In order to send the events to Azure Monitor, specify 'State' as 'Enabled', 'IsAzureMonitorTargetEnabled' as true and 'IsDevopsAuditEnabled' as true
 
 When using REST API to configure auditing, Diagnostic Settings with 'DevOpsOperationsAudit' diagnostic logs category on the master database should also be created.
@@ -3148,6 +3175,14 @@ For more information, see [Auditing to storage using Managed Identity authentica
 * **thumbprint**: string (ReadOnly): Thumbprint of the key.
 * **uri**: string (WriteOnly): The URI of the key. If the ServerKeyType is AzureKeyVault, then the URI is required.
 
+## ManagedInstanceLongTermRetentionBackup
+### Properties
+* **id**: string (ReadOnly): Fully qualified resource ID for the resource. E.g. "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+* **name**: string (ReadOnly): The name of the resource
+* **properties**: [ManagedInstanceLongTermRetentionBackupProperties](#managedinstancelongtermretentionbackupproperties): Resource properties.
+* **systemData**: [SystemData](#systemdata) (ReadOnly): Azure Resource Manager metadata containing createdBy and modifiedBy information.
+* **type**: string (ReadOnly): The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+
 ## ManagedInstanceLongTermRetentionBackupProperties
 ### Properties
 * **backupExpirationTime**: string (ReadOnly): The time the long term retention backup will expire.
@@ -3168,7 +3203,7 @@ For more information, see [Auditing to storage using Managed Identity authentica
 * **backupStorageAccessTier**: 'Archive' | 'Hot' | string: The BackupStorageAccessTier for the LTR backups
 * **monthlyRetention**: string: The monthly retention policy for an LTR backup in an ISO 8601 format.
 * **timeBasedImmutability**: 'Disabled' | 'Enabled' | string: The setting for whether to enable time-based immutability for future backups. When set, future backups will have TimeBasedImmutability enabled.
-* **timeBasedImmutabilityMode**: 'Locked' | 'Unlocked' | string: The setting for time-based immutability mode for future backup (Value can be either Locked or UnLocked. Only effective if TimeBasedImmutability is enabled). Caution: Immutability of LTR backup cannot be removed if TimeBasedImmutabilityMode is Locked.
+* **timeBasedImmutabilityMode**: 'Locked' | 'Unlocked' | string: The setting for time-based immutability mode for future backup (Value can be either Locked or Unlocked. Only effective if TimeBasedImmutability is enabled). Caution: Immutability of LTR backup cannot be removed if TimeBasedImmutabilityMode is Locked.
 * **weeklyRetention**: string: The weekly retention policy for an LTR backup in an ISO 8601 format.
 * **weekOfYear**: int: The week of year to take the yearly backup in an ISO 8601 format.
 * **yearlyRetention**: string: The yearly retention policy for an LTR backup in an ISO 8601 format.
@@ -3787,7 +3822,14 @@ PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 
 For more information, see [Diagnostic Settings REST API](https://go.microsoft.com/fwlink/?linkid=2033207)
 or [Diagnostic Settings PowerShell](https://go.microsoft.com/fwlink/?linkid=2033043)
-* **isDevopsAuditEnabled**: bool: Specifies the state of devops audit. If state is Enabled, devops logs will be sent to Azure Monitor.
+* **isDevopsAuditEnabled**: bool: **Note:** This field will soon be deprecated. Going forward, use the dedicated Server DevOps Audit Settings APIs to configure DevOps audit. See:
+
+- [Server DevOps Audit Settings - Create Or Update](https://learn.microsoft.com/en-us/rest/api/sql/server-devops-audit-settings/create-or-update)
+- [Server DevOps Audit Settings - Get](https://learn.microsoft.com/en-us/rest/api/sql/server-devops-audit-settings/get)
+
+---
+
+Specifies the state of devops audit. If state is Enabled, devops logs will be sent to Azure Monitor.
 In order to send the events to Azure Monitor, specify 'State' as 'Enabled', 'IsAzureMonitorTargetEnabled' as true and 'IsDevopsAuditEnabled' as true
 
 When using REST API to configure auditing, Diagnostic Settings with 'DevOpsOperationsAudit' diagnostic logs category on the master database should also be created.

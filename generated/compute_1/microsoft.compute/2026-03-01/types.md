@@ -738,7 +738,7 @@ its default value is true
 * **capacityReservations**: [SubResourceReadOnly](#subresourcereadonly)[] (ReadOnly): A list of all capacity reservation resource ids that belong to capacity reservation group.
 * **instanceView**: [CapacityReservationGroupInstanceView](#capacityreservationgroupinstanceview) (ReadOnly): The capacity reservation group instance view which has the list of instance views for all the capacity reservations that belong to the capacity reservation group.
 * **reservationType**: 'Block' | 'Targeted' | string: Indicates the type of capacity reservation. Allowed values are 'Block' for block capacity reservations that enable a VM to consume capacity only from this capacity block when it is associated using a capacity reservation group, 'Targeted' for reservations that enable a VM to consume capacity from an explicitly associated capacity reservation group and fall back to the publicly available capacity if the reservation is full, and 'Open' for reservations that a VM consumes when it is eligible from an implicitly associated capacity reservation group with the matching VM size and zone without associating that capacity reservation group and fall back to the publicly available capacity if the reservation is full. The reservation type is immutable and cannot be changed after the capacity reservation group is created.
-* **sharingProfile**: [ResourceSharingProfile](#resourcesharingprofile): Specifies the settings to enable sharing across subscriptions for the capacity reservation group resource. The capacity reservation group resource can generally be shared across subscriptions belonging to a single Azure AAD tenant or across AAD tenants if there is a trust relationship established between the tenants.  Block capacity reservation does not support sharing across subscriptions. **Note:** Minimum api-version: 2023-09-01. Please refer to https://aka.ms/computereservationsharing for more details.
+* **sharingProfile**: [ResourceSharingProfile](#resourcesharingprofile): Specifies the settings to enable sharing across subscriptions for the capacity reservation group resource. The capacity reservation group resource can be shared only across subscriptions belonging to the same Microsoft Entra ID tenant. Sharing across tenants is not supported. Block capacity reservation does not support sharing across subscriptions. **Note:** Minimum api-version: 2023-09-01. Please refer to https://aka.ms/computereservationsharing for more details.
 * **virtualMachinesAssociated**: [SubResourceReadOnly](#subresourcereadonly)[] (ReadOnly): A list of references to all virtual machines associated to the capacity reservation group.
 
 ## CapacityReservationInstanceView
@@ -1069,6 +1069,7 @@ its default value is true
 ### Properties
 * **disablePasswordAuthentication**: bool: Specifies whether password authentication should be disabled.
 * **enableVMAgentPlatformUpdates**: bool: Indicates whether VMAgent Platform Updates is enabled for the Linux virtual machine. Default value is false.
+This property is planned for deprecation and is managed by the platform. Customers cannot modify it through the API.
 * **patchSettings**: [LinuxPatchSettings](#linuxpatchsettings): [Preview Feature] Specifies settings related to VM Guest Patching on Linux.
 * **provisionVMAgent**: bool: Indicates whether virtual machine agent should be provisioned on the virtual machine. When this property is not specified in the request body, default behavior is to set it to true. This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later.
 * **ssh**: [SshConfiguration](#sshconfiguration): Specifies the ssh key configuration for a Linux OS.
@@ -1217,7 +1218,7 @@ its default value is true
 ### Properties
 * **excludeZones**: string[]: This property supplements the 'zonePlacementPolicy' property. If 'zonePlacementPolicy' is set to 'Any'/'Auto', availability zone selected by the system must not be present in the list of availability zones passed with 'excludeZones'. If 'excludeZones' is not provided, all availability zones in region will be considered for selection.
 * **includeZones**: string[]: This property supplements the 'zonePlacementPolicy' property. If 'zonePlacementPolicy' is set to 'Any'/'Auto', availability zone selected by the system must be present in the list of availability zones passed with 'includeZones'. If 'includeZones' is not provided, all availability zones in region will be considered for selection.
-* **zonePlacementPolicy**: 'Any' | 'Auto' | string: Specifies the policy for resource's placement in availability zone. Possible values are: **Any** (used for Virtual Machines), **Auto** (used for Virtual Machine Scale Sets) - An availability zone will be automatically picked by system as part of resource creation.
+* **zonePlacementPolicy**: 'Any' | 'Auto' | string: Specifies the policy for the resource's placement in an availability zone. Use **Auto** for Virtual Machines and Virtual Machine Scale Sets to let the system automatically select an availability zone during resource creation. **Any** remains supported for Virtual Machines for backward compatibility.
 
 ## Plan
 ### Properties
@@ -1331,7 +1332,7 @@ its default value is true
 ## RestorePointInstanceView
 ### Properties
 * **diskRestorePoints**: [DiskRestorePointInstanceView](#diskrestorepointinstanceview)[]: The disk restore points information.
-* **statuses**: [InstanceViewStatus](#instanceviewstatus)[]: The resource status information.
+* **statuses**: [InstanceViewStatus](#instanceviewstatus)[]: The aggregate status information for the restore point. The list may include separate aggregate entries for replication and, in supported API versions, Instant Access, as applicable. For more information about Instant Access, see [Use virtual machine restore points](https://learn.microsoft.com/azure/virtual-machines/virtual-machines-create-restore-points#instant-access).
 
 ## RestorePointProperties
 ### Properties
@@ -1537,7 +1538,7 @@ its default value is true
 
 ## StorageProfile
 ### Properties
-* **alignRegionalDisksToVMZone**: bool: Specifies whether the regional disks should be aligned/moved to the VM zone. This is applicable only for VMs with placement property set. Please note that this change is irreversible. Minimum api-version: 2024-11-01.
+* **alignRegionalDisksToVMZone**: bool: Specifies whether the regional disks should be aligned/moved to the VM zone. This is applicable **only** for VMs with placement.zonePlacementPolicy set to **Any**. Please note that this change is irreversible. Minimum api-version: 2024-11-01.
 * **dataDisks**: [DataDisk](#datadisk)[]: Specifies the parameters that are used to add a data disk to a virtual machine. For more information about disks, see [About disks and VHDs for Azure virtual machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).
 * **diskControllerType**: 'NVMe' | 'SCSI' | string: Specifies the disk controller type configured for the VM. **Note:** This property will be set to the default disk controller type if not specified provided virtual machine is being created with 'hyperVGeneration' set to V2 based on the capabilities of the operating system disk and VM size from the the specified minimum api version. You need to deallocate the VM before updating its disk controller type unless you are updating the VM size in the VM configuration which implicitly deallocates and reallocates the VM. Minimum api-version: 2022-08-01.
 * **imageReference**: [ImageReference](#imagereference): Specifies information about the image to use. You can specify information about platform images, marketplace images, or virtual machine images. This element is required when you want to use a platform image, marketplace image, or virtual machine image, but is not used in other creation operations.
@@ -2392,6 +2393,7 @@ the additional context can contain the key "priority" that helps customer identi
 * **additionalUnattendContent**: [AdditionalUnattendContent](#additionalunattendcontent)[]: Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.
 * **enableAutomaticUpdates**: bool: Indicates whether Automatic Updates is enabled for the Windows virtual machine. Default value is true. For virtual machine scale sets, this property can be updated and updates will take effect on OS reprovisioning.
 * **enableVMAgentPlatformUpdates**: bool (ReadOnly): Indicates whether VMAgent Platform Updates are enabled for the Windows Virtual Machine.
+This property is planned for deprecation and is managed by the platform. Customers cannot modify it through the API.
 * **patchSettings**: [PatchSettings](#patchsettings): [Preview Feature] Specifies settings related to VM Guest Patching on Windows.
 * **provisionVMAgent**: bool: Indicates whether virtual machine agent should be provisioned on the virtual machine. When this property is not specified in the request body, it is set to true by default. This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later.
 * **timeZone**: string: Specifies the time zone of the virtual machine. e.g. "Pacific Standard Time". Possible values can be [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id) value from time zones returned by [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).
